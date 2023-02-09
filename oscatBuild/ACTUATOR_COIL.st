@@ -16,10 +16,10 @@ FUNCTION_BLOCK ACTUATOR_COIL
     	STATUS := 100; (* disabled *)
     	(* now we need to check for self activation *)
     	tx := now - last;
-    	IF (SELF_ACT_CYCLE > T#0s) AND (tx >= TIME_TO_DWORD(SELF_ACT_CYCLE)) THEN
+    	IF (SELF_ACT_CYCLE > T#0s) AND (tx >= TIME_TO_UDINT(SELF_ACT_CYCLE)) THEN
     		OUT := TRUE;
     		STATUS := 102; (* auto activation *)
-    		IF tx >= TIME_TO_DWORD(SELF_ACT_CYCLE + SELF_ACT_TIME) THEN
+    		IF tx >= TIME_TO_UDINT(SELF_ACT_CYCLE + SELF_ACT_TIME) THEN
     			last := now;
     			OUT := FALSE;
     			STATUS := 100; (* idle *)

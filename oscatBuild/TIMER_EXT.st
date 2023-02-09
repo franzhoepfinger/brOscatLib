@@ -1,8 +1,8 @@
 FUNCTION_BLOCK TIMER_EXT
     (*http://www.oscat.de/images/OSCATBuilding/oscat_building100_en.pdf#page=63*)
     (* lösche die millisekunden bei sunrise und sunset *)
-    SUN_RISE := DWORD_TO_TOD(TOD_TO_DWORD(SUN_RISE) / 1000 * 1000);
-    SUN_SET := DWORD_TO_TOD(TOD_TO_DWORD(SUN_SET) / 1000 * 1000);
+    SUN_RISE := UDINT_TO_TOD(TOD_TO_UDINT(SUN_RISE) / 1000 * 1000);
+    SUN_SET := UDINT_TO_TOD(TOD_TO_UDINT(SUN_SET) / 1000 * 1000);
 
     (* measure cycle time tc and make sure this circuitry is not called more then once in 200ms*)
     tx := T_PLC_MS();
@@ -10,12 +10,12 @@ FUNCTION_BLOCK TIMER_EXT
     	init := TRUE;
     	tl := tx;
     END_IF
-    tc := DWORD_TO_TIME(tx - tl);
+    tc := UDINT_TO_TIME(tx - tl);
     IF tc < t#200ms THEN RETURN; END_IF
     tl := tx;
 
     (* debounce *)
-    deb(in := SWITCH, TD := T_DEBOUNCE, PM := TRUE);
+    deb(IN := SWITCH, TD := T_DEBOUNCE, PM := TRUE);
 
     (* read time of day and strip OFF all milliseconds *)
     tdx := DT_TO_TOD(DT_IN);
@@ -59,11 +59,11 @@ FUNCTION_BLOCK TIMER_EXT
 
 
     (* mnaual and output control *)
-    mx(in := qx, ENA := ENA, ON := ON, OFF := OFF, MAN := MAN);
+    mx(IN := qx, ENA := ENA, ON := ON, OFF := OFF, MAN := MAN);
     Q := mx.Q;
 
     (* set the STATUS output *)
-    IF mx.STATUS > 100 THEN STATUS := mx.STATUS; END_IF
+    IF BYTE_TO_USINT(mx.STATUS) > 100 THEN STATUS := mx.STATUS; END_IF
 
 
 

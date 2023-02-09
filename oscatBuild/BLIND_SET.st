@@ -1,7 +1,7 @@
 FUNCTION_BLOCK BLIND_SET
     (*http://www.oscat.de/images/OSCATBuilding/oscat_building100_en.pdf#page=91*)
     (* read system time *)
-    tx := DWORD_TO_TIME(T_PLC_MS());
+    tx := UDINT_TO_TIME(T_PLC_MS());
 
     (* check inputs *)
     IF IN THEN
@@ -11,7 +11,7 @@ FUNCTION_BLOCK BLIND_SET
     END_IF
 
     (* state machine *)
-    CASE STATUS OF
+    CASE BYTE_TO_USINT(STATUS) OF
     	0: (* power on state *)
     		STATUS := S_IN;
 

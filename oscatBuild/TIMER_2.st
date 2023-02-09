@@ -1,7 +1,7 @@
 FUNCTION_BLOCK TIMER_2
     (*http://www.oscat.de/images/OSCATBuilding/oscat_building100_en.pdf#page=60*)
     (* read system time *)
-    tx := DWORD_TO_TIME(T_PLC_MS());
+    tx := UDINT_TO_TIME(T_PLC_MS());
 
     IF NOT init THEN
     	init := TRUE;
@@ -17,13 +17,13 @@ FUNCTION_BLOCK TIMER_2
     wday := DAY_OF_WEEK(dat);
 
     (* calculate if any action is necessary today *)
-    CASE MODE OF
+    CASE BYTE_TO_USINT(MODE) OF
     	1..7:	(* mondays to fridays *)
     		enabled := wday = BYTE_TO_INT(MODE);
     	11:	(* every day *)
     		enabled := TRUE;
     	12..16:	(* every nth day *)
-    		enabled := (DATE_TO_DWORD(dat)/86400) MOD (MODE - 10) = 0;
+    		enabled := (DATE_TO_UDINT(dat)/86400) MOD (BYTE_TO_USINT(MODE) - 10) = 0;
     	20:	(* monday - friday *)
     		enabled := wday <= 5;
     	21:	(* saturday and sunday *)
@@ -37,7 +37,7 @@ FUNCTION_BLOCK TIMER_2
     	25:	(* 1st day of the month *)
     		enabled := DAY_OF_MONTH(dat) = 1;
     	26:	(* last day of month *)
-    		enabled := DAY_OF_MONTH(dat + T#1D) = 1;
+    		enabled := DAY_OF_MONTH(UDINT_TO_DATE(DATE_TO_UDINT(dat) + TIME_TO_UDINT(T#24h))) = 1;
     	27:	(* 31st of december *)
     		enabled := DAY_OF_MONTH(dat) = 31 AND MONTH_OF_DATE(dat) = 12;
     	28:	(* 1st of january *)
